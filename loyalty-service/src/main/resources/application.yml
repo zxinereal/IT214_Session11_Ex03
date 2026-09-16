@@ -1,0 +1,23 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: loyalty-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      # KHẮC PHỤC BUG-04: Đặt group-id riêng biệt cho Loyalty Service
+      # Đảm bảo nhận được 100% tin nhắn độc lập với Inventory Service (Mô hình Fan-out)
+      group-id: loyalty-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.storex.loyalty.model.OrderCreatedEvent
+
+app:
+  kafka:
+    topic: storex-order-events

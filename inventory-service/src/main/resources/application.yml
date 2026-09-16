@@ -1,0 +1,23 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: inventory-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      # KHẮC PHỤC BUG-04: Đặt group-id riêng biệt cho Inventory Service
+      # Đảm bảo nhận được 100% tin nhắn (Mô hình Fan-out / Publish-Subscribe)
+      group-id: inventory-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.storex.inventory.model.OrderCreatedEvent
+
+app:
+  kafka:
+    topic: storex-order-events
